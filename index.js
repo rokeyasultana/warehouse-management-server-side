@@ -33,35 +33,8 @@ async function run(){
             const product = await productCollection.findOne(query);
             res.send(product);
         });
- //Quantity update
- app.put("/product/:id",async(req,res)=>{
-  const id =req.params.id;
-  const deliveredQuantity =req.body;
-  console.log(deliveredQuantity);
-  const filter ={_id: ObjectId(id)};
-  const options ={upsert:true};
-  const updateDoc ={
-    $Set:{
-      quantity:deliveredQuantity.newQuantity,
-    }
-  };
-  const result = await productCollection.updateOne(filter, updateDoc, options);
-  res.send(result);
- });
 
- app.put("/product/:id",async(req,res)=>{
-  const id =req.params.id;
-  const setQuantity =req.body;
-  const filter = { _id: ObjectId(id) };
-  const options = { upsert: true };
-  const updateDoc = {
-    $set: {
-        quantity: setQuantity.newQuantity,
-    }
-};
-const result = await productCollection.updateOne(filter, updateDoc, options);
-res.send(result);
-});
+
 
     }
     finally{
@@ -73,7 +46,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello!')
+  res.send('Welcome to perfume world!')
 })
 
 app.listen(port, () => {
