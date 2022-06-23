@@ -27,33 +27,47 @@ async function run(){
             const products = await cursor.toArray();
             res.send(products);
         });
+
+
         app.get('/product/:id', async(req, res) =>{
             const id = req.params.id;
-            const query={_id: ObjectId(id)};
+            const query= {_id: ObjectId(id)};
             const product = await productCollection.findOne(query);
             res.send(product);
         });
 
 // my items
 
-        app.get('/myItems', async (req, res) => {
-          const email = req.query.email
-          // console.log(email);
-          const query = { email: email };
+        app.get('/myitems',async(req,res)=>{
+          const email = req.query.email;
+          const query ={email:email};
           const cursor = productCollection.find(query);
-          const products = await cursor.toArray();
-          res.send(products);
+          const products =await cursor.toArray()
+          res.send (products);
         });
 
+        // Delete items
+        
+        app.delete('/product/:id',async(req,res)=>{
+          const id =req.params.id;
+          const query ={_id: ObjectId(id)};
+          const result =await productCollection.deleteOne(query);
+          res,send(result);
+        });
+
+
+        // post
         app.post('/product', async (req, res) => {
           const newProduct = req.body;
           const result = await productCollection.insertOne(newProduct );
           res.send(result);
         });
 
-        app.put("/product/:id",async(req,res)=>{
-          const id =req.params.id;
-          const deliveredQuantity =req.body;
+// Quantity 
+
+        app.put("/product/:id",async(req,res) => {
+          const id = req.params.id;
+          const deliveredQuantity = req.body;
           console.log(deliveredQuantity);
           const filter ={_id: ObjectId(id)};
           const options ={upsert:true};
@@ -65,6 +79,23 @@ async function run(){
           const result = await productCollection.updateOne(filter, updateDoc, options);
           res.send(result);
          });
+
+
+         app.put("/product/:id",async(req,res)=>{
+          const id =req.params.id;
+          const setQuantity =req.body;
+          const filter = { _id: ObjectId(id) };
+          const options = { upsert: true };
+          const updateDoc = {
+            $set: {
+                quantity: setQuantity.newQuantity,
+            }
+        };
+
+        const result = await productCollection.updateOne(filter, updateDoc, options);
+        res.send(result);
+
+        });
 
     }
     finally{
