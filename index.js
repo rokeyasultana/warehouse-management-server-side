@@ -21,12 +21,20 @@ async function run(){
         await client.connect();
         const productCollection = client.db('warehouse_management').collection('products');
 
+        app.post('/product',async(req,res)=>{
+          const newProduct =req.body;
+          const result =await productCollection.insertOne(newProduct);
+          res.send(result)
+        })
+        
         app.get('/product', async(req, res) =>{
             const query = {};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
             res.send(products);
         });
+
+
 
 
         app.get('/product/:id', async(req, res) =>{
@@ -38,59 +46,62 @@ async function run(){
 
 // my items
 
-        app.get('/myitems',async(req,res)=>{
+        app.get('/myItems',async(req,res)=>{
           const email = req.query.email;
           const query ={email:email};
           const cursor = productCollection.find(query);
-          const products =await cursor.toArray()
+          const products = await cursor.toArray()
           res.send (products);
         });
 
+        app.post('/inventory', async (req, res) => {
+          const newProduct = req.body;
+          const result = await productCollection.insertOne(newProduct);
+          res.send(result);
+      });
+
         // Delete items
         
-        app.delete('/product/:id',async(req,res)=>{
-          const id =req.params.id;
-          const query ={_id: ObjectId(id)};
-          const result =await productCollection.deleteOne(query);
-          res,send(result);
-        });
-
-
-        // post
-        app.post('/product', async (req, res) => {
-          const newProduct = req.body;
-          const result = await productCollection.insertOne(newProduct );
+        app.delete('/inventory/:id', async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: ObjectId(id) };
+          const result = await productCollection.deleteOne(query);
           res.send(result);
-        });
+      });
 
+
+       
 // Quantity 
 
-        app.put("/product/:id",async(req,res) => {
-          const id = req.params.id;
-          const deliveredQuantity = req.body;
-          console.log(deliveredQuantity);
-          const filter ={_id: ObjectId(id)};
-          const options ={upsert:true};
-          const updateDoc ={
-            $Set:{
-              quantity:deliveredQuantity.newQuantity,
-            }
-          };
-          const result = await productCollection.updateOne(filter, updateDoc, options);
-          res.send(result);
-         });
+app.put("/inventory/:id", async (req, res) => {
+  const id = req.params.id;
+  const deliveredQuantity = req.body;
+  console.log(deliveredQuantity);
+  const filter = { _id: ObjectId(id) };
+  const options = { upsert: true };
+
+  const updateDoc = {
+      $set: {
+          quantity: deliveredQuantity.newQuantity,
+      }
+  };
+
+  const result = await productCollection.updateOne(filter, updateDoc, options);
+  res.send(result);
+});
 
 
-         app.put("/product/:id",async(req,res)=>{
-          const id =req.params.id;
-          const setQuantity =req.body;
-          const filter = { _id: ObjectId(id) };
-          const options = { upsert: true };
-          const updateDoc = {
-            $set: {
-                quantity: setQuantity.newQuantity,
-            }
-        };
+app.put("/inventory/:id", async (req, res) => {
+  const id = req.params.id;
+  const setQuantity = req.body;
+  const filter = { _id: ObjectId(id) };
+  const options = { upsert: true };
+
+  const updateDoc = {
+      $set: {
+          quantity: setQuantity.newQuantity,
+      }
+  };
 
         const result = await productCollection.updateOne(filter, updateDoc, options);
         res.send(result);
@@ -111,5 +122,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(` App listening on port ${port}`)
+  console.log('App Listening to Port', port);
 })
