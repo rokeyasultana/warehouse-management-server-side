@@ -34,7 +34,12 @@ async function run(){
             res.send(products);
         });
 
-
+// post
+app.post('/product', async (req, res) => {
+  const newProduct = req.body;
+  const result = await productCollection.insertOne(newProduct);
+  res.send(result);
+});
 
 
         app.get('/product/:id', async(req, res) =>{
@@ -54,44 +59,45 @@ async function run(){
           res.send (products);
         });
 
-        app.post('/inventory', async (req, res) => {
-          const newProduct = req.body;
-          const result = await productCollection.insertOne(newProduct);
-          res.send(result);
-      });
 
-        // Delete items
+
+ // Delete items
         
-        app.delete('/inventory/:id', async (req, res) => {
+        app.delete('/product/:id', async (req, res) => {
           const id = req.params.id;
           const query = { _id: ObjectId(id) };
           const result = await productCollection.deleteOne(query);
           res.send(result);
       });
+ 
 
-
-       
-// Quantity 
-
-app.put("/inventory/:id", async (req, res) => {
+      
+ app.put('/product/:id', async (req, res) => {
   const id = req.params.id;
-  const deliveredQuantity = req.body;
-  console.log(deliveredQuantity);
+  const updatedProduct = req.body;
   const filter = { _id: ObjectId(id) };
   const options = { upsert: true };
-
   const updateDoc = {
       $set: {
-          quantity: deliveredQuantity.newQuantity,
+
+          name: updatedProduct.name,
+          img: updatedProduct.img,
+          price: updatedProduct.price,
+          quantity: updatedProduct.quantity,
+          description: updatedProduct.description,
+          supplier: updatedProduct.supplier
+
       }
   };
-
   const result = await productCollection.updateOne(filter, updateDoc, options);
-  res.send(result);
-});
+  res.send(result)
+
+})
 
 
-app.put("/inventory/:id", async (req, res) => {
+
+
+app.put("/product/:id", async (req, res) => {
   const id = req.params.id;
   const setQuantity = req.body;
   const filter = { _id: ObjectId(id) };
