@@ -61,6 +61,27 @@ app.post('/product', async (req, res) => {
 
 
 
+//update items
+app.put("/product/:id", async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: ObjectId(id) };
+  const options = { upsert: true };
+  const data = req.body;
+  const updateDoc = {
+    $set: {
+      quantity: data.quantity,
+    },
+  };
+  const result = await productCollection.updateOne(
+    query,
+    updateDoc,
+    options
+  );
+  res.send(result);
+});
+
+
+
  // Delete items
         
         app.delete('/product/:id', async (req, res) => {
@@ -72,47 +93,10 @@ app.post('/product', async (req, res) => {
  
 
       
- app.put('/product/:id', async (req, res) => {
-  const id = req.params.id;
-  const updatedProduct = req.body;
-  const filter = { _id: ObjectId(id) };
-  const options = { upsert: true };
-  const updateDoc = {
-      $set: {
-
-          name: updatedProduct.name,
-          img: updatedProduct.img,
-          price: updatedProduct.price,
-          quantity: updatedProduct.quantity,
-          description: updatedProduct.description,
-          supplier: updatedProduct.supplier
-
-      }
-  };
-  const result = await productCollection.updateOne(filter, updateDoc, options);
-  res.send(result)
-
-})
+ 
 
 
 
-
-app.put("/product/:id", async (req, res) => {
-  const id = req.params.id;
-  const setQuantity = req.body;
-  const filter = { _id: ObjectId(id) };
-  const options = { upsert: true };
-
-  const updateDoc = {
-      $set: {
-          quantity: setQuantity.newQuantity,
-      }
-  };
-
-        const result = await productCollection.updateOne(filter, updateDoc, options);
-        res.send(result);
-
-        });
 
     }
     finally{
